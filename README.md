@@ -8,15 +8,17 @@ https://velog.io/@ayeah77/series/%EB%8C%80%EA%B8%B0%EC%97%B4-%ED%94%84%EB%A1%9C%
 
 ### 사용 기술
 ---
-Backend : SpringBoot, Spring Webflux, Java
+Backend : SpringBoot, Spring WebFlux, Spring Data JPA, Java
 
-Frontend : React.js, JavaScript
+DB/Cache : MySQL, Redis (Reactive)
 
-DB/Cache : MySQL, Redis
+Messaging/CDC : Kafka, Kafka Connect, MySQL Debezium Connector
 
-INFRA : Kafka, Kafka Connect
+Monitoring : Prometheus, Grafana, Spring Actuator, Micrometer
 
-ETC : SSE, MySQL Debezium Connector <br><br>
+Infra : Docker, Docker Compose
+
+ETC : SSE, Transactional Outbox Pattern <br><br>
 
 ### 요청 흐름
 
