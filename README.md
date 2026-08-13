@@ -29,8 +29,8 @@ ETC : SSE, Transactional Outbox Pattern <br><br>
 
 <p align="center"><img width="1774" height="887" alt="queue-proto-archi" src="https://github.com/user-attachments/assets/92373ada-1b20-4432-b6e8-d6e5cb122ea4" />
 
-[ Transactional Outbox Pattern과 MySQL Debezium Connector을 사용하는 구조 ]
-   
+**Transactional Outbox Pattern과 MySQL Debezium Connector을 사용하는 구조**
+
 <img width="1774" height="887" alt="debezium-archi" src="https://github.com/user-attachments/assets/2beaf663-45b5-4863-802a-2e91a0f3def2" />
 
 Transactional Outbox 패턴과 Debezium을 함께 사용하면 DB 변경과 이벤트 기록을 하나의 트랜잭션으로 처리하여 원자성을 보장할 수 있습니다. 이후 Debezium이 Outbox 테이블의 변경 내용을 MySQL Binlog에서 감지하고 Kafka로 이벤트를 전달합니다.
