@@ -1,7 +1,7 @@
 ### 아키텍처
 ---
 
-<p align="center"><img width="625" height="188" alt="Image" src="https://github.com/user-attachments/assets/0205be3b-61b1-4284-a1da-17e9aecd89a4" /><br><br>
+<p align="center"><img width="1774" height="887" alt="queue-proto-archi" src="https://github.com/user-attachments/assets/92373ada-1b20-4432-b6e8-d6e5cb122ea4" /><br><br>
 
 **구현 과정**<br>
 https://velog.io/@ayeah77/series/%EB%8C%80%EA%B8%B0%EC%97%B4-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8<br><br>
