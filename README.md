@@ -27,8 +27,17 @@ ETC : SSE, Transactional Outbox Pattern <br><br>
 ### 아키텍처
 ---
 
-<p align="center"><img width="1774" height="887" alt="queue-proto-archi" src="https://github.com/user-attachments/assets/92373ada-1b20-4432-b6e8-d6e5cb122ea4" /><br><br>
+<p align="center"><img width="1774" height="887" alt="queue-proto-archi" src="https://github.com/user-attachments/assets/92373ada-1b20-4432-b6e8-d6e5cb122ea4" />
 
+[ Transactional Outbox Pattern과 MySQL Debezium Connector을 사용하는 구조 ]
+   
+<img width="1774" height="887" alt="debezium-archi" src="https://github.com/user-attachments/assets/2beaf663-45b5-4863-802a-2e91a0f3def2" />
+
+Transactional Outbox 패턴과 Debezium을 함께 사용하면 DB 변경과 이벤트 기록을 하나의 트랜잭션으로 처리하여 원자성을 보장할 수 있습니다. 이후 Debezium이 Outbox 테이블의 변경 내용을 MySQL Binlog에서 감지하고 Kafka로 이벤트를 전달합니다.
+
+Kafka publish에 실패하더라도 Debezium이 다시 처리할 수 있어 이벤트 유실을 방지하고, DB 상태와 Kafka 이벤트 스트림 간의 정합성을 유지할 수 있습니다.
+
+단, Debezium은 일반적으로 At-least-once 방식이므로 이벤트가 중복 전달될 수 있어, Consumer 측에서는 중복 처리를 고려해야 합니다.<br><br>
 
 ### 동작 흐름
 
@@ -79,18 +88,6 @@ ETC : SSE, Transactional Outbox Pattern <br><br>
 이를 해결하기 위해 Debezium MySQL Kafka 커넥터를 활용하여 데이터베이스 테이블의 변경 사항을 감지하고 이를 Kafka에 이벤트를 발행하도록 하여 데이터베이스 트랜잭션과 이벤트 간의 정합성 문제를 해결하였습니다.
 
 결과적으로, Debezium 기반의 Transactional Outbox Pattern을 구현함으로써 DB와 이벤트 스트림 간의 불일치 문제를 해결하고, 이벤트 소실 방지, 순서 보장, 데이터 정합성을 해결할 수 있었습니다.<br><br>
-
-### 주요 기술 
----
-**Transactional Outbox Pattern과 MySQL Debezium Connector을 사용하는 구조**
-
-<img width="1774" height="887" alt="debezium-archi" src="https://github.com/user-attachments/assets/2beaf663-45b5-4863-802a-2e91a0f3def2" />
-
-Transactional Outbox 패턴과 Debezium을 함께 사용하면 DB 변경과 이벤트 기록을 하나의 트랜잭션으로 처리하여 원자성을 보장할 수 있습니다. 이후 Debezium이 Outbox 테이블의 변경 내용을 MySQL Binlog에서 감지하고 Kafka로 이벤트를 전달합니다.
-
-Kafka publish에 실패하더라도 Debezium이 다시 처리할 수 있어 이벤트 유실을 방지하고, DB 상태와 Kafka 이벤트 스트림 간의 정합성을 유지할 수 있습니다.
-
-단, Debezium은 일반적으로 At-least-once 방식이므로 이벤트가 중복 전달될 수 있어, Consumer 측에서는 중복 처리를 고려해야 합니다.<br><br>
 
 ### 추후 개선점
 ---
