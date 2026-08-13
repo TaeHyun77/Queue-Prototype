@@ -54,7 +54,21 @@ ETC : SSE, Transactional Outbox Pattern <br><br>
 
    이와 같은 흐름을 통해 대기열 등록, 삭제, 순번 이동 등 상태가 변경될 때마다 해당 대기열에 연결된 사용자들에게 자신의 대기열 상태를 실시간 SSE 이벤트로 전달합니다.<br><br>
 
-### 구조 개선
+### 기능 구현
+---
+- 순위 조회 : 사용자가 대기열 또는 참가열 중 어디에 속해 있는지 확인하고, Redis ZSET의 순위를 기반으로 현재 대기 순번을 조회합니다.
+  
+- 자동 순번 승격 : 스케줄러가 5초마다 대기열 상위 사용자를 참가열로 자동 이동시키고, 참가열에 진입한 사용자에게 10분간 유효한 접근 토큰을 발급합니다.
+  
+- 접근 토큰 발급 및 검증 : SHA-256 기반의 접근 토큰을 생성해 쿠키로 발급하고, 이후 요청마다 토큰의 유효성과 만료 여부를 검증하여 비인가된 접근을 차단합니다.
+  
+- Outbox 기반 상태 변경 기록 : 사용자의 대기열 상태 변경과 Outbox 레코드 저장을 하나의 트랜잭션으로 처리하여, DB 상태 변경과 이벤트 발행 간의 원자성을 보장합니다.
+  
+- CDC 기반 이벤트 전파 : MySQL Debezium Connector가 Outbox 테이블의 변경 사항을 Binlog에서 감지해 Kafka로 발행하고, Kafka Consumer가 이를 수신하여 대기열 상태 변경 이벤트를 실시간으로 전파합니다.
+  
+- 실시간 SSE 알림 : 사용자별 SSE 연결을 유지하며, 참가열에 진입하면 confirm 이벤트를, 대기 중이면 갱신된 순위를, 조회에 실패하면 에러 이벤트를 실시간으로 전달합니다.
+
+### 개선 사항
 ---
 기존에는 Redis에 대기열 정보를 저장한 뒤 서버에서 직접 SSE 이벤트를 전송했지만, 장애가 발생하여 이벤트가 전달되지 않거나 소실될 경우 서비스에 큰 영향을 줄 수 있었습니다.
 
@@ -72,13 +86,11 @@ ETC : SSE, Transactional Outbox Pattern <br><br>
 
 <img width="1774" height="887" alt="debezium-archi" src="https://github.com/user-attachments/assets/2beaf663-45b5-4863-802a-2e91a0f3def2" />
 
-[ Transactional Outbox + Debezium 구조 ]
+Transactional Outbox 패턴과 Debezium을 함께 사용하면 DB 변경과 이벤트 기록을 하나의 트랜잭션으로 처리하여 원자성을 보장할 수 있습니다. 이후 Debezium이 Outbox 테이블의 변경 내용을 MySQL Binlog에서 감지하고 Kafka로 이벤트를 전달합니다.
 
-Transactional Outbox 패턴과 Debezium을 함께 사용하면, DB 변경과 이벤트 생성은 하나의 트랜잭션으로 원자성을 보장하고( Outbox ), Outbox 테이블의 이벤트를 메시지 브로커로 전달( Debezium )할 수 있기 때문에 DB 상태와 이벤트 전달 간의 정합성을 맞출 수 있습니다.
+Kafka publish에 실패하더라도 Debezium이 다시 처리할 수 있어 이벤트 유실을 방지하고, DB 상태와 Kafka 이벤트 스트림 간의 정합성을 유지할 수 있습니다.
 
-Outbox 테이블 변경을 binlog에서 감지하여 Kafka로 publish하고, publish 실패 시 Debezium이 자동으로 재시도하므로 이벤트 유실이 없습니다.
-
-이를 통해 DB 상태와 Kafka 이벤트 스트림 사이의 정합성을 유지할 수 있습니다.<br><br>
+단, Debezium은 일반적으로 At-least-once 방식이므로 이벤트가 중복 전달될 수 있어, Consumer 측에서는 중복 처리를 고려해야 합니다.<br><br>
 
 ### 추후 개선점
 ---
