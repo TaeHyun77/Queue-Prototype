@@ -75,7 +75,7 @@ Kafka publish에 실패하더라도 Debezium이 다시 처리할 수 있어 이�
   
 - CDC 기반 이벤트 전파 : MySQL Debezium Connector가 Outbox 테이블의 변경 사항을 Binlog에서 감지해 Kafka로 발행하고, Kafka Consumer가 이를 수신하여 대기열 상태 변경 이벤트를 실시간으로 전파합니다.
   
-- 실시간 SSE 알림 : 사용자별 SSE 연결을 유지하며, 참가열에 진입하면 confirm 이벤트를, 대기 중이면 갱신된 순위를, 조회에 실패하면 에러 이벤트를 실시간으로 전달합니다.
+- 실시간 SSE 알림 : 사용자별 SSE 연결을 유지하며, 참가열에 진입하면 confirm 이벤트를, 대기 중이면 갱신된 순위를, 조회에 실패하면 에러 이벤트를 실시간으로 전달합니다.<br><br>
 
 ### 개선 사항
 ---
